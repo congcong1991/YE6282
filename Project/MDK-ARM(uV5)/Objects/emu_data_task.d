@@ -104,6 +104,7 @@
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_fmc_io.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_tim_pwm.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_beep.h
+.\objects\emu_data_task.o: ..\..\User\app.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\FreeRTOS.h
 .\objects\emu_data_task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\FreeRTOSConfig.h
@@ -115,11 +116,11 @@
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\task.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\list.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\queue.h
+.\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\timers.h
+.\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\semphr.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\croutine.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\list.h
-.\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\semphr.h
 .\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\event_groups.h
-.\objects\emu_data_task.o: ..\..\User\FreeRTOS\include\timers.h
 .\objects\emu_data_task.o: ..\..\Libraries\CMSIS\Include\arm_math.h
 .\objects\emu_data_task.o: ..\..\Libraries\CMSIS\Include\core_cm7.h
 .\objects\emu_data_task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
