@@ -1,0 +1,15 @@
+.\objects\sockets.o: ..\..\User\lwip\src\api\sockets.c
+.\objects\sockets.o: ..\..\User\lwip\src\include\lwip/opt.h
+.\objects\sockets.o: ..\..\User\lwip\src\port\lwipopts.h
+.\objects\sockets.o: ..\..\User\lwip\src\include\lwip/debug.h
+.\objects\sockets.o: ..\..\User\lwip\src\include\lwip/arch.h
+.\objects\sockets.o: ..\..\User\lwip\src\include\arch/cc.h
+.\objects\sockets.o: ..\..\User\lwip\src\include\arch/cpu.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+.\objects\sockets.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
+.\objects\sockets.o: ..\..\User\lwip\src\include\lwip/opt.h

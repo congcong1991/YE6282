@@ -1,0 +1,16 @@
+.\objects\elog_port.o: ..\..\User\easylogger\port\elog_port.c
+.\objects\elog_port.o: ..\..\User\easylogger\inc\elog.h
+.\objects\elog_port.o: ..\..\User\easylogger\inc\elog_cfg.h
+.\objects\elog_port.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\elog_port.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\elog_port.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\elog_port.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\FreeRTOS.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\FreeRTOSConfig.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\projdefs.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\portable.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\deprecated_definitions.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\portable\RVDS\ARM_CM7\r0p1\portmacro.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\mpu_wrappers.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\task.h
+.\objects\elog_port.o: ..\..\User\FreeRTOS\include\list.h
