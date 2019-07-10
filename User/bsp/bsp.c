@@ -69,16 +69,16 @@ void bsp_Init(void)
 	EventRecorderStart();
 #endif
 
-	bsp_InitUart();		/* 初始化串口 */
+//	bsp_InitUart();		/* 初始化串口 */
 
-	bsp_InitLed();    	/* 初始化LED */	
+//	bsp_InitLed();    	/* 初始化LED */	
 }
 
 /*
 *********************************************************************************************************
 *	函 数 名: SystemClock_Config
 *	功能说明: 初始化系统时钟
-*            	System Clock source            = PLL (HSE)
+*            	System Clock source            = PLL (HSE BYPASS)
 *            	SYSCLK(Hz)                     = 400000000 (CPU Clock)
 *           	HCLK(Hz)                       = 200000000 (AXI and AHBs Clock)
 *            	AHB Prescaler                  = 2
@@ -86,9 +86,9 @@ void bsp_Init(void)
 *            	D2 APB1 Prescaler              = 2 (APB1 Clock  100MHz)
 *            	D2 APB2 Prescaler              = 2 (APB2 Clock  100MHz)
 *            	D3 APB4 Prescaler              = 2 (APB4 Clock  100MHz)
-*            	HSE Frequency(Hz)              = 8000000
-*           	PLL_M                          = 5
-*            	PLL_N                          = 160
+*            	HSE Frequency(Hz)              = 25000000   (8000000)
+*           	PLL_M                          = 5          (4)
+*            	PLL_N                          = 160        (400)
 *            	PLL_P                          = 2
 *            	PLL_Q                          = 4
 *            	PLL_R                          = 2
@@ -102,6 +102,7 @@ static void SystemClock_Config(void)
 {
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
 	RCC_OscInitTypeDef RCC_OscInitStruct;
+	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
 	HAL_StatusTypeDef ret = HAL_OK;
 
 	/* 锁住SCU(Supply configuration update) */
@@ -110,33 +111,62 @@ static void SystemClock_Config(void)
 	/* 
       1、芯片内部的LDO稳压器输出的电压范围，可选VOS1，VOS2和VOS3，不同范围对应不同的Flash读速度，
          详情看参考手册的Table 12的表格。
-      2、这里选择使用VOS1，电压范围1.15V - 1.26V。
+		//      2、这里选择使用VOS1，电压范围1.15V - 1.26V。
     */
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
 	while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+	
+	/* Enable D2 domain SRAM3 Clock (0x30040000 AXI)*/
+	__HAL_RCC_D2SRAM3_CLK_ENABLE();
+		
+//	/* Macro to configure the PLL clock source  */
+//	__HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSE);
 
-	/* 使能HSE，并选择HSE作为PLL时钟源 */
+	/* 使能HSE，并选择HSE作为PLL时钟源 */	
 	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
 	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
 	RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
 	RCC_OscInitStruct.CSIState = RCC_CSI_OFF;
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-		
-	RCC_OscInitStruct.PLL.PLLM = 4;
-	RCC_OscInitStruct.PLL.PLLN = 400;
+	RCC_OscInitStruct.PLL.PLLM = 5;
+	RCC_OscInitStruct.PLL.PLLN = 160;
 	RCC_OscInitStruct.PLL.PLLP = 2;
 	RCC_OscInitStruct.PLL.PLLR = 2;
 	RCC_OscInitStruct.PLL.PLLQ = 4;		
-		
 	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
-	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;	
+	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;		
 	ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
 	if(ret != HAL_OK)
 	{
         Error_Handler(__FILE__, __LINE__);
 	}
+	
+	/* PLL3-Q for USB Clock = 48M */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USB;
+	PeriphClkInitStruct.PLL3.PLL3M = 5;
+	PeriphClkInitStruct.PLL3.PLL3N = 48;
+	PeriphClkInitStruct.PLL3.PLL3P = 2;
+	PeriphClkInitStruct.PLL3.PLL3Q = 5;
+	PeriphClkInitStruct.PLL3.PLL3R = 2;
+	PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_2;
+	PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
+	PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+	PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLL3;
+	  HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+	  
+	/* PLL3-R for LTDC */
+//	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
+//	PeriphClkInitStruct.PLL3.PLL3M = 25;    
+//	PeriphClkInitStruct.PLL3.PLL3N = 160;
+//	PeriphClkInitStruct.PLL3.PLL3P = 2;
+//	PeriphClkInitStruct.PLL3.PLL3Q = 2;
+//	PeriphClkInitStruct.PLL3.PLL3R = 32;  
+//	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct); 		
+
+//	/* Disable  PLL3. */
+//	__HAL_RCC_PLL3_DISABLE();
 
 	/* 
        选择PLL的输出作为系统时钟
@@ -164,7 +194,7 @@ static void SystemClock_Config(void)
 	{
         Error_Handler(__FILE__, __LINE__);
 	}
-
+  
     /*
       使用IO的高速模式，要使能IO补偿，即调用下面三个函数 
       （1）使能CSI clock
@@ -176,13 +206,6 @@ static void SystemClock_Config(void)
 	__HAL_RCC_SYSCFG_CLK_ENABLE() ;
 
 	HAL_EnableCompensationCell();
-
-   /* AXI SRAM的时钟是上电自动使能的，而D2域的SRAM1，SRAM2和SRAM3要单独使能 */	
-#if 0
-	__HAL_RCC_D2SRAM1_CLK_ENABLE();
-	__HAL_RCC_D2SRAM2_CLK_ENABLE();
-	__HAL_RCC_D2SRAM3_CLK_ENABLE();
-#endif
 }
 
 /*

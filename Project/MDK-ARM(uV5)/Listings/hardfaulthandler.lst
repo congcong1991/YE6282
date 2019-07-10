@@ -86,11 +86,12 @@ ARM Macro Assembler    Page 2
    54 00000012                 END
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M7.fp.dp --apcs=
 interwork --depend=.\objects\hardfaulthandler.d -o.\objects\hardfaulthandler.o 
--I.\RTE\_Flash -ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include -ID:\Keil_v5
-\ARM\PACK\Keil\STM32H7xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32H7xx\Include --
-predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 525" --predef
-ine="_RTE_ SETA 1" --predefine="STM32H743xx SETA 1" --list=.\listings\hardfault
-handler.lst ..\..\User\segger\HardFaultHandlerMDK\HardFaultHandler.S
+-I.\RTE\Compiler -I.\RTE\_Flash -ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Inc
+lude -ID:\Keil_v5\ARM\PACK\Keil\ARM_Compiler\1.4.0\Include -ID:\Keil_v5\ARM\PAC
+K\Keil\STM32H7xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32H7xx\Include --predefin
+e="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 525" --predefine="_RT
+E_ SETA 1" --predefine="STM32H743xx SETA 1" --list=.\listings\hardfaulthandler.
+lst ..\..\User\segger\HardFaultHandlerMDK\HardFaultHandler.S
 
 
 

@@ -1268,12 +1268,13 @@ ARM Macro Assembler    Page 20
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M7.fp.dp --apcs=
 interwork --depend=.\objects\startup_stm32h743xx.d -o.\objects\startup_stm32h74
-3xx.o -I.\RTE\_Flash -ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include -ID:\K
-eil_v5\ARM\PACK\Keil\STM32H7xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32H7xx\Incl
-ude --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 525" --
-predefine="_RTE_ SETA 1" --predefine="STM32H743xx SETA 1" --list=.\listings\sta
-rtup_stm32h743xx.lst ..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Source\Templates
-\arm\startup_stm32h743xx.s
+3xx.o -I.\RTE\Compiler -I.\RTE\_Flash -ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMS
+IS\Include -ID:\Keil_v5\ARM\PACK\Keil\ARM_Compiler\1.4.0\Include -ID:\Keil_v5\A
+RM\PACK\Keil\STM32H7xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32H7xx\Include --pr
+edefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 525" --predefin
+e="_RTE_ SETA 1" --predefine="STM32H743xx SETA 1" --list=.\listings\startup_stm
+32h743xx.lst ..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Source\Templates\arm\sta
+rtup_stm32h743xx.s
 
 
 

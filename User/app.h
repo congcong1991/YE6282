@@ -32,7 +32,7 @@
 
 
 
-extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
+//extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
 extern volatile uint8_t HeadIndex;
 extern volatile uint8_t TailIndex;
 extern uint16_t TXDBUFLength[TxdBufLine];
@@ -266,7 +266,7 @@ typedef  struct PARAMETER				 // 所有参数
 }PARAMETER;
 
 typedef enum {PRE_TX=0,IN_TX=1,} TXcondition;
-typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
+//typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 typedef enum {VLLS = 0, MANUALRESET = !DISABLE} WakeupSourec;
 #define IS_FUNCTIONAL_STATE(STATE) (((STATE) == DISABLE) || ((STATE) == ENABLE))
 

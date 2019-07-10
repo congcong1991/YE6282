@@ -22,144 +22,15 @@ Dialog DLL:      TCM.DLL V1.35.1.0
  
 <h2>Project:</h2>
 D:\YE6283\stm32h7_freertos-master\Project\MDK-ARM(uV5)\project.uvprojx
-Project File Date:  06/26/2019
+Project File Date:  07/10/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Flash'
-compiling date_process_task.c...
-..\..\User\app.h(35): error:  #20: identifier "SAMPLEPOINTS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(35): error:  #20: identifier "Acceleration_ADCHS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(269): error:  #101: "DISABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #101: "ENABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #256: invalid redeclaration of type name "FunctionalState"  (declared at line 142 of "..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h")
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\date_process_task.c(43): error:  #20: identifier "halfref" is undefined
-  	  halfref=32768;
-..\..\User\date_process_task.c(45): error:  #20: identifier "ADCHS" is undefined
-    	for(i=0;i<ADCHS;i++){
-..\..\User\date_process_task.c(46): error:  #20: identifier "AD_ZERO" is undefined
-  		  AD_ZERO[i]=(uint64_t)32768*16384;  // tao 10s 
-..\..\User\date_process_task.c(47): error:  #20: identifier "AD_ZEROlowpass" is undefined
-  			AD_ZEROlowpass[i]=0u;
-..\..\User\date_process_task.c(48): error:  #20: identifier "AD_INTER" is undefined
-  			AD_INTER[i]=0;
-..\..\User\date_process_task.c(50): error:  #20: identifier "lastdata" is undefined
-  			lastdata[i]=0;
-..\..\User\date_process_task.c(51): error:  #20: identifier "filtercounter" is undefined
-  			filtercounter[i]=0;
-..\..\User\date_process_task.c(56): error:  #20: identifier "AD7606_ready" is undefined
-  			while(!(xSemaphoreTake(AD7606_ready, portMAX_DELAY) == pdTRUE))
-..\..\User\date_process_task.c(58): error:  #20: identifier "Ad7606_Data" is undefined
-  			p=(int16_t *)&Ad7606_Data[CurrentAD7606DataCounter];
-..\..\User\date_process_task.c(58): error:  #20: identifier "CurrentAD7606DataCounter" is undefined
-  			p=(int16_t *)&Ad7606_Data[CurrentAD7606DataCounter];
-..\..\User\date_process_task.c(68): error:  #20: identifier "AD_ZERO" is undefined
-  						 AD_ZERO[i]=y+(((int64_t)AD_ZERO[i]*332767)>>15);
-..\..\User\date_process_task.c(78): error:  #20: identifier "AD_ZEROlowpass" is undefined
-  						  AD_ZEROlowpass[i]=((int64_t)y+lastdata[i])*49041-AD_ZEROlowpass[i]*32547; //6.2K
-..\..\User\date_process_task.c(78): error:  #20: identifier "lastdata" is undefined
-  						  AD_ZEROlowpass[i]=((int64_t)y+lastdata[i])*49041-AD_ZEROlowpass[i]*32547; //6.2K
-..\..\User\date_process_task.c(88): error:  #20: identifier "AD_ZEROlowpass" is undefined
-  							AD_ZEROlowpass[i]=((int64_t)y+lastdata[i])*22451+AD_ZEROlowpass[i]*20706;
-..\..\User\date_process_task.c(88): error:  #20: identifier "lastdata" is undefined
-  							AD_ZEROlowpass[i]=((int64_t)y+lastdata[i])*22451+AD_ZEROlowpass[i]*20706;
-..\..\User\date_process_task.c(96): error:  #20: identifier "AD_ZEROlowpass" is undefined
-  							AD_ZEROlowpass[i]=((int64_t)y+lastdata[i])*12870+AD_ZEROlowpass[i]*39795;
-..\..\User\date_process_task.c(96): error:  #20: identifier "lastdata" is undefined
-  							AD_ZEROlowpass[i]=((int64_t)y+lastdata[i])*12870+AD_ZEROlowpass[i]*39795;
-..\..\User\date_process_task.c(105): error:  #20: identifier "filtercounter" is undefined
-  						filtercounter[i]++;
-..\..\User\date_process_task.c(109): error:  #20: identifier "ActualIndex" is undefined
-  						StoreDateIndex=ActualIndex>>FreFactor;
-..\..\User\date_process_task.c(110): warning:  #223-D: function "UpdateAccelerationData" declared implicitly
-  						UpdateAccelerationData(y,i,StoreDateIndex);
-..\..\User\date_process_task.c(121): error:  #20: identifier "ActualIndex" is undefined
-         	ActualIndex++;   //原则上应该加个中断锁的，特别是当特征值模式下，写这个下标参数为0时，后来改了一个方案				
-..\..\User\date_process_task.c(127): warning:  #223-D: function "GPIO_PortToggle" declared implicitly
-  				 GPIO_PortToggle(GPIOB, 1u << 0);  //低功耗记得取消	
-..\..\User\date_process_task.c(129): error:  #20: identifier "currentSAMPLEblock" is undefined
-           currentSAMPLEblock=0;
-..\..\User\date_process_task.c(132): error:  #20: identifier "SAMPLEDATA_ready" is undefined
-  				 xSemaphoreGive(SAMPLEDATA_ready);
-..\..\User\date_process_task.c: 2 warnings, 27 errors
-compiling main.c...
-..\..\User\app.h(35): error:  #20: identifier "SAMPLEPOINTS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(35): error:  #20: identifier "Acceleration_ADCHS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(269): error:  #101: "DISABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #101: "ENABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #256: invalid redeclaration of type name "FunctionalState"  (declared at line 142 of "..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h")
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\main.c: 0 warnings, 5 errors
-compiling tcp_client.c...
-compiling send_buffer_task.c...
-..\..\User\app.h(35): error:  #20: identifier "SAMPLEPOINTS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(35): error:  #20: identifier "Acceleration_ADCHS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(269): error:  #101: "DISABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #101: "ENABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #256: invalid redeclaration of type name "FunctionalState"  (declared at line 142 of "..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h")
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\send_buffer_task.c(74): error:  #20: identifier "WRITE_ready" is undefined
-  	if(xSemaphoreTake(WRITE_ready, portMAX_DELAY) != pdTRUE);//  等信号量，没毛病
-..\..\User\send_buffer_task.c(78): error:  #20: identifier "WRITE_ready" is undefined
-  	xSemaphoreGive(WRITE_ready);//释放信号量这块
-..\..\User\send_buffer_task.c(95): error:  #20: identifier "WRITE_ready" is undefined
-  	xSemaphoreGive(WRITE_ready);//释放信号量这块
-..\..\User\send_buffer_task.c: 0 warnings, 8 errors
-compiling emu_data_task.c...
-..\..\User\app.h(35): error:  #20: identifier "SAMPLEPOINTS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(35): error:  #20: identifier "Acceleration_ADCHS" is undefined
-  extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-..\..\User\app.h(269): error:  #101: "DISABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #101: "ENABLE" has already been declared in the current scope
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\app.h(269): error:  #256: invalid redeclaration of type name "FunctionalState"  (declared at line 142 of "..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h")
-  typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-..\..\User\emu_data_task.c(148): error:  #20: identifier "currentSAMPLEblock" is undefined
-  	if(currentSAMPLEblock==1)SAMPLEblock=0;
-..\..\User\emu_data_task.c(174): error:  #20: identifier "ReceiveSamplesPeriod" is undefined
-  			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&ReceiveSamplesPeriod[SAMPLEblock][j][0], testOutput, config.ADfrequence*2);
-..\..\User\emu_data_task.c(178): error:  #20: identifier "sacle16384_10HP" is undefined
-  			ScaleValue = sacle16384_10HP;
-..\..\User\emu_data_task.c(186): error:  #20: identifier "sacle8192_10HP" is undefined
-  			 ScaleValue = sacle8192_10HP;
-..\..\User\emu_data_task.c(199): error:  #20: identifier "IIRCoeffs16384_10HP" is undefined
-  			arm_biquad_cascade_df1_init_f32(&S_test, numStages, (float32_t *)&IIRCoeffs16384_10HP[0], (float32_t
-..\..\User\emu_data_task.c(231): error:  #20: identifier "ReceiveSamplesPeriod" is undefined
-  				 yy=ReceiveSamplesPeriod[SAMPLEblock][j][i];
-..\..\User\emu_data_task.c(250): error:  #20: identifier "ReceiveSamplesPeriod" is undefined
-        yy=ReceiveSamplesPeriod[SAMPLEblock][j][i]-Parameter.average[j];
-..\..\User\emu_data_task.c(146): warning:  #177-D: variable "vy"  was declared but never referenced
-  	float yy,vy;
-..\..\User\emu_data_task.c(286): error:  #20: identifier "rtc_datetime_t" is undefined
-  	rtc_datetime_t currentime;
-..\..\User\emu_data_task.c(287): warning:  #223-D: function "RTC_GetDatetime" declared implicitly
-  	RTC_GetDatetime(RTC,&currentime);
-..\..\User\emu_data_task.c(290): error:  #20: identifier "Sample_Time" is undefined
-  	sendbuf[4]=Sample_Time.year;
-..\..\User\emu_data_task.c(380): warning:  #223-D: function "WriteDataToTXDBUF" declared implicitly
-  	WriteDataToTXDBUF(sendbuf,(63+50*iii));
-..\..\User\emu_data_task.c(393): error:  #20: identifier "SAMPLEDATA_ready" is undefined
-    while(!(xSemaphoreTake(SAMPLEDATA_ready, portMAX_DELAY) == pdTRUE))
-..\..\User\emu_data_task.c(395): error:  #20: identifier "true" is undefined
-  		if((config.DataToBoardMode==PARAMETERMODE)&&(config.ParameterTransimissonStatus==true))
-..\..\User\emu_data_task.c(404): error: At end of source:  #67: expected a "}"
-..\..\User\emu_data_task.c: 3 warnings, 17 errors
-".\Objects\output.axf" - 57 Error(s), 5 Warning(s).
+After Build - User command #1: CopyHex_Flash.bat
+D:\YE6283\stm32h7_freertos-master\Project\MDK-ARM(uV5)>copy Objects\output.hex ..\output(mdk).hex 
+已复制         1 个文件。
+".\Objects\output.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -171,13 +42,22 @@ Package Vendor: ARM
    * Component: DSP Version: 1.5.2
 
 Package Vendor: Keil
+                http://www.keil.com/pack/Keil.ARM_Compiler.1.4.0.pack
+                Keil.ARM_Compiler.1.4.0
+                Keil ARM Compiler extensions for ARM Compiler 5 and ARM Compiler 6
+   * Component: Event Recorder Variant: DAP Version: 1.4.0
+   * Component: STDOUT Variant: Breakpoint Version: 1.4.0
+
+Package Vendor: Keil
                 https://www.keil.com/pack/Keil.STM32H7xx_DFP.2.3.0.pack
                 Keil.STM32H7xx_DFP.2.3.0
                 STMicroelectronics STM32H7 Series Device Support and Examples
 
 <h2>Collection of Component include folders:</h2>
+  .\RTE\Compiler
   .\RTE\_Flash
   D:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include
+  D:\Keil_v5\ARM\PACK\Keil\ARM_Compiler\1.4.0\Include
   D:\Keil_v5\ARM\PACK\Keil\STM32H7xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32H7xx\Include
 
 <h2>Collection of Component Files used:</h2>
@@ -187,8 +67,15 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:DSP:1.5.2
       Include file:  CMSIS\Include\arm_math.h
       Library file:  CMSIS\Lib\ARM\arm_cortexM7lfdp_math.lib
-Target not created.
-Build Time Elapsed:  00:00:03
+
+   * Component: Keil.ARM Compiler::Compiler:Event Recorder:DAP:1.4.0
+      Include file:  Config\EventRecorderConf.h
+      Source file:   Source\EventRecorder.c
+      Include file:  Include\EventRecorder.h
+
+   * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:Breakpoint:1.4.0
+      Source file:   Source\retarget_io.c
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
