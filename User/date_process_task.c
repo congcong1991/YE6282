@@ -26,8 +26,7 @@
 #include "semphr.h"
 #include "event_groups.h"  
 
-int16_t emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
-uint16_t TXD_BUFFER_NET[5000][1000] __attribute__((at(0xC0200000))); //0xa0 0000
+
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
 void AD7606_TASK(void *pvParameters)
 {

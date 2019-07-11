@@ -56,3 +56,5 @@
 .\objects\tcp_client.o: ..\..\User\lwip\src\include\lwip/prot/ip.h
 .\objects\tcp_client.o: ..\..\User\lwip\src\include\lwip/icmp.h
 .\objects\tcp_client.o: ..\..\User\lwip\src\include\lwip/prot/icmp.h
+.\objects\tcp_client.o: ..\..\User\app.h
+.\objects\tcp_client.o: ..\..\User\FreeRTOS\include\timers.h

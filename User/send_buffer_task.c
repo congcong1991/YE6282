@@ -17,9 +17,23 @@
 #include "semphr.h"
 #include "event_groups.h"
 
+
+#include "lwip/sys.h"
+#include "lwip/api.h"
+
+#include "lwip/tcp.h"
+#include "lwip/ip.h"
+
 MDMA_HandleTypeDef MDMA_Handle;
 
+int16_t emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
+uint16_t TXD_BUFFER_NET[5000][1000] __attribute__((at(0xC0200000))); //0xa0 0000
+uint32_t TXD_BUFFER_NET_Length[5000];
 uint16_t volatile TransferCompleteDetected=0;
+uint16_t testtt[1024]={0x1111,0x2222,0x3333,0x5445,0x6666,0x1111};
+volatile uint32_t TxdBufHeadIndex;
+volatile uint32_t TxdBufTailIndex;
+
 void MDMA_IRQHandler(void)
 {
 	HAL_MDMA_IRQHandler(&MDMA_Handle);
@@ -39,10 +53,10 @@ void MDMA_init(void)
 	MDMA_Handle.Init.TransferTriggerMode  = MDMA_BLOCK_TRANSFER;     /* 块传输 */
 	MDMA_Handle.Init.Priority             = MDMA_PRIORITY_HIGH;      /* 优先级高*/
 	MDMA_Handle.Init.Endianness           = MDMA_LITTLE_ENDIANNESS_PRESERVE; /* 小端 */
-	MDMA_Handle.Init.SourceInc            = MDMA_SRC_INC_DOUBLEWORD;         /* 源地址自增，双字，即8字节 */
-	MDMA_Handle.Init.DestinationInc       = MDMA_DEST_INC_DOUBLEWORD;        /* 目的地址自增，双字，即8字节 */
-	MDMA_Handle.Init.SourceDataSize       = MDMA_SRC_DATASIZE_DOUBLEWORD;    /* 源地址数据宽度双字，即8字节 */
-	MDMA_Handle.Init.DestDataSize         = MDMA_DEST_DATASIZE_DOUBLEWORD;   /* 目的地址数据宽度双字，即8字节 */
+	MDMA_Handle.Init.SourceInc            = MDMA_SRC_INC_HALFWORD;         /* 源地址自增，双字，即8字节 */
+	MDMA_Handle.Init.DestinationInc       = MDMA_DEST_INC_HALFWORD;        /* 目的地址自增，双字，即8字节 */
+	MDMA_Handle.Init.SourceDataSize       = MDMA_SRC_DATASIZE_HALFWORD;    /* 源地址数据宽度双字，即8字节 */
+	MDMA_Handle.Init.DestDataSize         = MDMA_DEST_DATASIZE_HALFWORD;   /* 目的地址数据宽度双字，即8字节 */
 	MDMA_Handle.Init.DataAlignment        = MDMA_DATAALIGN_PACKENABLE;       /* 小端，右对齐 */                    
 	MDMA_Handle.Init.SourceBurst          = MDMA_SOURCE_BURST_128BEATS;      /* 源数据突发传输，128次 */
 	MDMA_Handle.Init.DestBurst            = MDMA_DEST_BURST_128BEATS;        /* 源数据突发传输，128次 */
@@ -68,7 +82,8 @@ void MDMA_init(void)
 	
 }
 
-uint8_t WriteDataToTXDBUF(uint8_t * source,uint16_t length)
+extern SemaphoreHandle_t WRITE_ready;
+uint8_t WriteDataToTXDBUF(uint16_t * source,uint32_t length)
 { 
 	
 	if(xSemaphoreTake(WRITE_ready, portMAX_DELAY) != pdTRUE);//  等信号量，没毛病
@@ -86,12 +101,44 @@ uint8_t WriteDataToTXDBUF(uint8_t * source,uint16_t length)
 	TransferCompleteDetected = 0;
 	HAL_MDMA_Start_IT(&MDMA_Handle,
 																(uint32_t)source,
-																(uint32_t)0xC0000000,
-																length/4,
+																(uint32_t)TXD_BUFFER_NET[TxdBufHeadIndex],
+																length,
 																1);
-
+	
 	while(TransferCompleteDetected == 0) {}
-	Increase(HeadIndex);  
+	TXD_BUFFER_NET_Length[TxdBufHeadIndex]=length;
+	Increase(TxdBufHeadIndex);  
 	xSemaphoreGive(WRITE_ready);//释放信号量这块
 	return 1;
+}
+
+extern struct netconn *tcp_client_server_conn;
+void send_buffer_task( void )
+{
+	MDMA_init();
+	for(uint16_t i=0;i<100;i++)
+	{
+		WriteDataToTXDBUF(testtt,1000);
+	}
+	for(;;)
+	{
+		if(!isTxdBufEmpty()) //
+		{
+			if( tcp_client_server_conn )
+			{
+				if( netconn_write( tcp_client_server_conn, TXD_BUFFER_NET[TxdBufTailIndex], TXD_BUFFER_NET_Length[TxdBufTailIndex], NETCONN_COPY)==ERR_OK)
+				{
+					IncreaseNetReceiveBuf(TxdBufTailIndex);
+				}
+				else
+				{
+				}
+			}
+		
+		} else
+		{
+		vTaskDelay(2);
+
+		}
+	}
 }

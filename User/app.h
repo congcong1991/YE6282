@@ -7,6 +7,20 @@
 #include "timers.h"
 #include "semphr.h"
 
+#define      RX_BUFFER_SIZE                              1024
+#define      TX_BUFFER_SIZE                              1024
+
+//extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
+extern volatile uint32_t TxdBufHeadIndex;
+extern volatile uint32_t TxdBufTailIndex;
+
+extern void DelayMS ( uint16_t t);
+extern volatile uint16_t RxdBufHeadIndex;
+extern volatile uint16_t RxdBufTailIndex;
+
+
+extern uint8_t CmdBuf[TX_BUFFER_SIZE];
+extern uint16_t CmdBufLength;
 
 #define AD7606_ADCHS 4
 #define AD7606SAMPLEPOINTS 128
@@ -16,33 +30,28 @@
 #define PERIODBOARDPOINTS SAMPLEPOINTS*sizeof(int16_t) //(4*ADCHS*SAMPLEPOINTS)
 #define ADC16_ByDMA_SAMPLE_COUNT (2*ADCHS*SAMPLEPOINTS) /* The ADC16 sample count. */
 
-#define      RX_BUFFER_SIZE                              2560
-#define      TX_BUFFER_SIZE                              2560
 
+/*用于发送网络的数据*/
 #define TxdBufLine  256
 #define Increase(x)   {x=(x+1)%TxdBufLine;}
-#define isTxdBufFull() ((HeadIndex+1)%TxdBufLine==TailIndex)
-#define isTxdBufEmpty() (HeadIndex==TailIndex)
+#define isTxdBufFull() ((TxdBufHeadIndex+1)%TxdBufLine==TxdBufTailIndex)
+#define isTxdBufEmpty() (TxdBufHeadIndex==TxdBufTailIndex)
 
-#define MaxStoreSeconds 2
-#define LiteWaveBufline  16384*Acceleration_ADCHS*MaxStoreSeconds
-#define IncreaseLiteWave(x)   {x=(x+1)%LiteWaveBufline;}
-#define isLiteWaveBufFull() ((LiteWaveHeadIndex+1)%LiteWaveBufline==LiteWaveTailIndex)
-#define isLiteWaveBufEmpty() (LiteWaveHeadIndex==LiteWaveTailIndex)
-
-
-
-//extern uint8_t TXDBUF[TxdBufLine][BOARDPOINTS+20];
-extern volatile uint8_t HeadIndex;
-extern volatile uint8_t TailIndex;
 extern uint16_t TXDBUFLength[TxdBufLine];
-extern void DelayMS ( uint16_t t);
-extern volatile uint16_t RxdBufHeadIndex;
-extern volatile uint16_t RxdBufTailIndex;
+
+/*用于接收网络的数据*/
+extern uint32_t NetReceiveBufHeadIndex;
+extern uint32_t NetReceiveBufTailIndex;
+#define NetReceiveBufSize  2048
+#define IncreaseNetReceiveBuf(x)   {x=(x+1)%NetReceiveBufSize;}
+#define isNetReceiveBufFull() ((NetReceiveBufHeadIndex+1)%NetReceiveBufSize==NetReceiveBufTailIndex)
+#define isNetReceiveBufEmpty() (NetReceiveBufHeadIndex==NetReceiveBufTailIndex)
 
 
-extern uint8_t CmdBuf[TX_BUFFER_SIZE];
-extern uint16_t CmdBufLength;
+
+extern int16_t emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
+extern uint16_t TXD_BUFFER_NET[5000][1000] __attribute__((at(0xC0200000))); //0xa0 0000
+
 
 #define RxdBufLine  256
 #define EMUPONITS  16390*2  //最大取2S的数据
@@ -267,7 +276,7 @@ typedef  struct PARAMETER				 // 所有参数
 
 typedef enum {PRE_TX=0,IN_TX=1,} TXcondition;
 //typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
-typedef enum {VLLS = 0, MANUALRESET = !DISABLE} WakeupSourec;
+//typedef enum {VLLS = 0, MANUALRESET = !DISABLE} WakeupSourec;
 #define IS_FUNCTIONAL_STATE(STATE) (((STATE) == DISABLE) || ((STATE) == ENABLE))
 
 				

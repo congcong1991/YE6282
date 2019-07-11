@@ -49,10 +49,16 @@
 
 static void vTaskLED (void *pvParameters);
 static void vTaskLwip(void *pvParameters);
+static void vTaskTlvloop(void *pvParameters);
+static void vTaskTSendBuf(void *pvParameters);
 
  TaskHandle_t xHandleTaskLED  = NULL;
  TaskHandle_t xHandleTaskLwip = NULL;
-
+ TaskHandle_t xHandleTaskTlvloop = NULL;
+ TaskHandle_t xHandleTaskSendbuf = NULL;
+	
+ SemaphoreHandle_t WRITE_ready;
+ 
 struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 	1,//uint8_t baundrate;    
 	1,//uint8_t addr; 
@@ -116,11 +122,12 @@ struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 *	返 回 值: 错误代码(无需处理)
 *********************************************************************************************************
 */
+uint16_t eeee;
 int main(void)
 {
 
 	bsp_Init();		/* 硬件初始化 */
-	
+	bsp_InitExtSDRAM();
 	/* initialize EasyLogger */
 	if (elog_init() == ELOG_NO_ERR)
 	{
@@ -140,15 +147,31 @@ int main(void)
 			elog_start();
 	}
 	
+	WRITE_ready = xSemaphoreCreateBinary();
+	xSemaphoreGive(WRITE_ready);
+	
 	xTaskCreate( vTaskLED, "vTaskLED", 512, NULL, 3, &xHandleTaskLED );
 	xTaskCreate( vTaskLwip,"Lwip"     ,512, NULL, 2, &xHandleTaskLwip );
-	
+	xTaskCreate( vTaskTlvloop,"TLV_LOOP"     ,512, NULL, 2, &xHandleTaskTlvloop );
+	xTaskCreate( vTaskTSendBuf,"Sendbuf"     ,512, NULL, 2, &xHandleTaskSendbuf );
 	/* 启动调度，开始执行任务 */
 	vTaskStartScheduler();
 }
 
 
 struct netif gnetif; /* network interface structure */
+
+extern void send_buffer_task( void );
+static void vTaskTSendBuf(void *pvParameters)
+{
+	send_buffer_task();
+}
+
+
+static void vTaskTlvloop(void *pvParameters)
+{
+	receive_server_data_task();
+}
 
 static void netif_config(void)
 {
