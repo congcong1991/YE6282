@@ -98,6 +98,7 @@
 .\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_timer.h
 .\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_led.h
 .\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_key.h
+.\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_cpu_rtc.h
 .\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_uart_fifo.h
 .\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_spi_ad7606.h
 .\objects\segger_hardfaulthandler.o: ..\..\User\bsp\inc\bsp_fmc_sdram.h

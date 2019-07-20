@@ -99,6 +99,7 @@
 .\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_timer.h
 .\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_led.h
 .\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_key.h
+.\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_cpu_rtc.h
 .\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_uart_fifo.h
 .\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_spi_ad7606.h
 .\objects\stm32h7xx_it.o: ..\..\User\bsp\inc\bsp_fmc_sdram.h

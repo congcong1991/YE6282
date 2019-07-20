@@ -98,6 +98,7 @@
 .\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_timer.h
 .\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_led.h
 .\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_key.h
+.\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_cpu_rtc.h
 .\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_uart_fifo.h
 .\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_spi_ad7606.h
 .\objects\bsp_key.o: ..\..\User\bsp\inc\bsp_fmc_sdram.h

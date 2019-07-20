@@ -99,9 +99,9 @@ void AD7606_ReadNowAdc(void);
 void AD7606_EnterAutoMode(uint32_t _ulFreq);
 void AD7606_StartRecord(uint32_t _ulFreq);
 void AD7606_StopRecord(void);
-uint8_t AD7606_FifoNewData(void);
-uint8_t AD7606_ReadFifo(uint16_t *_usReadAdc);
-uint8_t AD7606_FifoFull(void);
+
+
+
 
 
 /* 全局变量 */

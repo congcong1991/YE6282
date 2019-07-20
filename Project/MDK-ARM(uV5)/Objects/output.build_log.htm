@@ -22,19 +22,22 @@ Dialog DLL:      TCM.DLL V1.35.1.0
  
 <h2>Project:</h2>
 D:\YE6283\stm32h7_freertos-master\Project\MDK-ARM(uV5)\project.uvprojx
-Project File Date:  07/11/2019
+Project File Date:  07/18/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Flash'
-compiling send_buffer_task.c...
+compiling bsp_spi_ad7606.c...
+..\..\User\bsp\src\bsp_spi_ad7606.c(628): warning:  #550-D: variable "y"  was set but never used
+  	int16_t y;
+..\..\User\bsp\src\bsp_spi_ad7606.c: 1 warning, 0 errors
 linking...
-Program Size: Code=78620 RO-data=2008 RW-data=8884 ZI-data=11749876  
+Program Size: Code=88252 RO-data=2036 RW-data=13792 ZI-data=11761544  
 FromELF: creating hex file...
 After Build - User command #1: CopyHex_Flash.bat
 D:\YE6283\stm32h7_freertos-master\Project\MDK-ARM(uV5)>copy Objects\output.hex ..\output(mdk).hex 
 已复制         1 个文件。
-".\Objects\output.axf" - 0 Error(s), 0 Warning(s).
+".\Objects\output.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -73,13 +76,13 @@ Package Vendor: Keil
       Include file:  CMSIS\Include\arm_math.h
 
    * Component: Keil.ARM Compiler::Compiler:Event Recorder:DAP:1.4.0
-      Include file:  Include\EventRecorder.h
-      Include file:  Config\EventRecorderConf.h
       Source file:   Source\EventRecorder.c
+      Include file:  Config\EventRecorderConf.h
+      Include file:  Include\EventRecorder.h
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:Breakpoint:1.4.0
       Source file:   Source\retarget_io.c
-Build Time Elapsed:  00:00:18
+Build Time Elapsed:  00:00:16
 </pre>
 </body>
 </html>

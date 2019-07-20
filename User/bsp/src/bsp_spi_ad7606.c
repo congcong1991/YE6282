@@ -25,7 +25,7 @@
 */
 
 #include "bsp.h"
-
+#include "app.h"
 /* CONVST 启动ADC转换的GPIO = PC6 */
 #define CONVST_RCC_GPIO_CLK_ENABLE	__HAL_RCC_GPIOC_CLK_ENABLE
 #define CONVST_GPIO		GPIOC
@@ -93,6 +93,13 @@ AD7606_FIFO_T g_tAdcFifo;	/* 定义FIFO结构体变量 */
 static void AD7606_CtrlLinesConfig(void);
 static void AD7606_SPIConfig(void);
 
+enum {
+  TRANSFER_WAIT,
+  TRANSFER_COMPLETE,
+  TRANSFER_ERROR
+};
+
+__IO uint32_t wTransferState=TRANSFER_COMPLETE;
 /*
 *********************************************************************************************************
 *	函 数 名: bsp_InitAD7606
@@ -146,10 +153,9 @@ static void AD7606_CtrlLinesConfig(void)
 
 
 	/* 设置 GPIOD 相关的IO为复用推挽输出 */
-	gpio_init_structure.Mode = GPIO_MODE_AF_PP;
+	gpio_init_structure.Mode = GPIO_MODE_OUTPUT_PP;
 	gpio_init_structure.Pull = GPIO_PULLUP;
 	gpio_init_structure.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	gpio_init_structure.Alternate = GPIO_AF12_FMC;
 	
 	/* 配置GPIOA */
 	gpio_init_structure.Pin = GPIO_PIN_3 | GPIO_PIN_5 ;
@@ -173,6 +179,8 @@ static void AD7606_CtrlLinesConfig(void)
 *	返 回 值: 无
 *********************************************************************************************************
 */
+
+
 void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
@@ -208,6 +216,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 //    GPIO_InitStruct.Alternate = SPIx_MOSI_AF;
 //    HAL_GPIO_Init(SPIx_MOSI_GPIO_PORT, &GPIO_InitStruct);
 
+    /*##-3- Configure the DMA ##################################################*/
     /*##-3- Configure the DMA ##################################################*/
     /* Configure the DMA handler for Transmission process */
     hdma_tx.Instance                 = SPIx_TX_DMA_STREAM;
@@ -252,16 +261,16 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
     
     /*##-4- Configure the NVIC for DMA #########################################*/ 
     /* NVIC configuration for DMA transfer complete interrupt (SPI1_TX) */
-    HAL_NVIC_SetPriority(SPIx_DMA_TX_IRQn, 1, 1);
+    HAL_NVIC_SetPriority(SPIx_DMA_TX_IRQn, 13, 1);
     HAL_NVIC_EnableIRQ(SPIx_DMA_TX_IRQn);
     
     /* NVIC configuration for DMA transfer complete interrupt (SPI1_RX) */
-    HAL_NVIC_SetPriority(SPIx_DMA_RX_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(SPIx_DMA_RX_IRQn, 14, 0);
     HAL_NVIC_EnableIRQ(SPIx_DMA_RX_IRQn);
 
     /*##-5- Configure the NVIC for SPI #########################################*/ 
     /* NVIC configuration for SPI transfer complete interrupt (SPI1) */
-    HAL_NVIC_SetPriority(SPIx_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(SPIx_IRQn, 12, 0);
     HAL_NVIC_EnableIRQ(SPIx_IRQn);
   }
 }
@@ -271,7 +280,7 @@ static void AD7606_SPIConfig(void)
  
   /*##-1- Configure the SPI peripheral #######################################*/
   /* Set the SPI parameters */
-  SpiHandle.Instance               = SPIx;
+	SpiHandle.Instance               = SPIx;
   SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   SpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
   SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
@@ -284,9 +293,7 @@ static void AD7606_SPIConfig(void)
   SpiHandle.Init.CRCLength         = SPI_CRC_LENGTH_8BIT;
   SpiHandle.Init.NSS               = SPI_NSS_SOFT;
   SpiHandle.Init.NSSPMode          = SPI_NSS_PULSE_DISABLE;
-  SpiHandle.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE;  /* Recommanded setting to avoid glitches */
-
-
+  SpiHandle.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE; 
   SpiHandle.Init.Mode = SPI_MODE_MASTER;
 
 
@@ -439,6 +446,10 @@ ALIGN_32BYTES(uint8_t aRxBuffer[BUFFERSIZE]);
 
 void AD7606_ReadNowAdc(void)
 {
+	if(wTransferState==TRANSFER_ERROR)  //如果传输错误
+	{
+//		Error_Handler();
+	}
 	if(HAL_SPI_TransmitReceive_DMA(&SpiHandle, (uint8_t*)aTxBuffer, (uint8_t *)aRxBuffer, BUFFERSIZE) != HAL_OK)
   {
     /* Transfer error in transmission process */
@@ -446,76 +457,8 @@ void AD7606_ReadNowAdc(void)
   }
 }
 
-void SPIx_DMA_RX_IRQHandler(void)
-{
-	
-}
-/*
-*********************************************************************************************************
-*		下面的函数用于定时采集模式。 TIM5硬件定时中断中读取ADC结果，存在全局FIFO
-*
-*
-*********************************************************************************************************
-*/
 
-/*
-*********************************************************************************************************
-*	函 数 名: AD7606_HasNewData
-*	功能说明: 判断FIFO中是否有新数据
-*	形    参:  _usReadAdc : 存放ADC结果的变量指针
-*	返 回 值: 1 表示有，0表示暂无数据
-*********************************************************************************************************
-*/
-uint8_t AD7606_HasNewData(void)
-{
-	if (g_tAdcFifo.usCount > 0)
-	{
-		return 1;
-	}
-	return 0;
-}
 
-/*
-*********************************************************************************************************
-*	函 数 名: AD7606_FifoFull
-*	功能说明: 判断FIFO是否满
-*	形    参:  _usReadAdc : 存放ADC结果的变量指针
-*	返 回 值: 1 表示满，0表示未满
-*********************************************************************************************************
-*/
-uint8_t AD7606_FifoFull(void)
-{
-	return g_tAdcFifo.ucFull;
-}
-
-/*
-*********************************************************************************************************
-*	函 数 名: AD7606_ReadFifo
-*	功能说明: 从FIFO中读取一个ADC值
-*	形    参:  _usReadAdc : 存放ADC结果的变量指针
-*	返 回 值: 1 表示OK，0表示暂无数据
-*********************************************************************************************************
-*/
-uint8_t AD7606_ReadFifo(uint16_t *_usReadAdc)
-{
-	if (AD7606_HasNewData())
-	{
-		*_usReadAdc = g_tAdcFifo.sBuf[g_tAdcFifo.usRead];
-		if (++g_tAdcFifo.usRead >= ADC_FIFO_SIZE)
-		{
-			g_tAdcFifo.usRead = 0;
-		}
-
-		DISABLE_INT();
-		if (g_tAdcFifo.usCount > 0)
-		{
-			g_tAdcFifo.usCount--;
-		}
-		ENABLE_INT();
-		return 1;
-	}
-	return 0;
-}
 
 /*
 *********************************************************************************************************
@@ -647,9 +590,92 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if (GPIO_Pin == BUSY_PIN)
 	{
 		AD7606_ISR();
+		
 	}
 }
 
+void SPIx_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(SpiHandle.hdmarx);
+}
 
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None
+  */
+void SPIx_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(SpiHandle.hdmatx);
+}
+
+/**
+  * @brief  This function handles SPIx interrupt request.
+  * @param  None
+  * @retval None
+  */
+void SPIx_IRQHandler(void)
+{
+  HAL_SPI_IRQHandler(&SpiHandle);
+}
+__attribute__((section (".RAM_D1"))) int16_t Ad7606_Data[AD7606SAMPLEPOINTS*AD7606_ADCHS*2];
+volatile uint32_t AD7606DataCounter=0;
+volatile uint32_t CurrentAD7606DataCounter=0;
+extern  SemaphoreHandle_t AD7606_ready;
+volatile uint32_t ttttttt=0;
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	int16_t y;
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	SCB_InvalidateDCache_by_Addr ((uint32_t *)aRxBuffer, 4);
+	
+	for(uint32_t i=0;i<AD7606_ADCHS;i++)
+	{
+		
+		short aa_0 = aRxBuffer[2*i];
+		short aa_1 = aRxBuffer[2*i+1];
+		short aa_0_1 = ((aa_0<<8) | aa_1);
+		y = aa_0_1;
+		
+		Ad7606_Data[AD7606DataCounter++]=ttttttt*0.1;
+//		Ad7606_Data[AD7606DataCounter++]=y;
+	}
+	ttttttt++;
+	if(ttttttt>=51200)
+		ttttttt=0;
+	if((AD7606DataCounter%AD7606_ADCHS)!=0)    //如果发现数据不对齐，这边直接return掉
+	{
+		AD7606DataCounter=0;
+		return;
+	}
+	if(AD7606DataCounter==(AD7606SAMPLEPOINTS*AD7606_ADCHS))
+	{
+		CurrentAD7606DataCounter=0;
+		bsp_LedToggle(2);		
+//		memset(&Ad7606_Data[AD7606SAMPLEPOINTS*AD7606_ADCHS],0,AD7606SAMPLEPOINTS*AD7606_ADCHS);
+		xSemaphoreGiveFromISR( AD7606_ready, &xHigherPriorityTaskWoken );  
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	}else if(AD7606DataCounter>(AD7606SAMPLEPOINTS*AD7606_ADCHS*2-AD7606_ADCHS))
+	{
+		bsp_LedToggle(2);	
+		CurrentAD7606DataCounter=AD7606SAMPLEPOINTS*AD7606_ADCHS;
+		AD7606DataCounter=0;
+		xSemaphoreGiveFromISR(AD7606_ready,&xHigherPriorityTaskWoken );  
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	}
+  wTransferState = TRANSFER_COMPLETE;
+}
+
+/**
+  * @brief  SPI error callbacks.
+  * @param  hspi: SPI handle
+  * @note   This example shows a simple way to report transfer error, and you can
+  *         add your own implementation.
+  * @retval None
+  */
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+{
+  wTransferState = TRANSFER_ERROR;
+}
 
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

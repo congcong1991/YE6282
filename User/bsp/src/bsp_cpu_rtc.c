@@ -52,7 +52,7 @@ void bsp_InitRTC(void)
 	{ 		
 		RTC_Config(); 	/* RTC 配置 */ 
 		
-		RTC_WriteClock(2018, 9, 1, 0, 0, 0);	/* 设置初始时间 */
+		RTC_WriteClock(2019, 7, 19, 0, 0, 0);	/* 设置初始时间 */
 		
 		/* 配置备份寄存器，表示已经设置过RTC */
 		HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, RTC_INIT_FLAG);		

@@ -58,6 +58,7 @@ void bsp_Init(void)
     */
 	SystemClock_Config();
 
+
 	/* 
 	   Event Recorder：
 	   - 可用于代码执行时间测量，MDK5.25及其以上版本才支持，IAR不支持。
@@ -70,8 +71,8 @@ void bsp_Init(void)
 #endif
 
 //	bsp_InitUart();		/* 初始化串口 */
-
-//	bsp_InitLed();    	/* 初始化LED */	
+	bsp_InitRTC();
+	bsp_InitLed();    	/* 初始化LED */	
 }
 
 /*

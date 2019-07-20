@@ -51,14 +51,14 @@ static void vTaskLED (void *pvParameters);
 static void vTaskLwip(void *pvParameters);
 static void vTaskTlvloop(void *pvParameters);
 static void vTaskTSendBuf(void *pvParameters);
-
+static void vTaskTDataProcess(void *pvParameters);
  TaskHandle_t xHandleTaskLED  = NULL;
  TaskHandle_t xHandleTaskLwip = NULL;
  TaskHandle_t xHandleTaskTlvloop = NULL;
  TaskHandle_t xHandleTaskSendbuf = NULL;
-	
+	TaskHandle_t xHandleDataProcess = NULL;
  SemaphoreHandle_t WRITE_ready;
- 
+ SemaphoreHandle_t AD7606_ready;
 struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 	1,//uint8_t baundrate;    
 	1,//uint8_t addr; 
@@ -66,9 +66,9 @@ struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 	0, //uint8_t parity;		// =0 : n,8,1   =1: o,8,1  =2: e,8,1	 数据格式
 	{0.2f,0.2f,0.2f,1,1,1,1,1,1,1,1,1},
 	0, //uint8_t DisplayMode;  // 显示模式　=0　固定　=1 循环
-	{TYPE_IEPE,TYPE_PT,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,1,1,1}, //uint8_t interface_type[12]; // 输入类型
+	{TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,TYPE_IEPE,1,1,1}, //uint8_t interface_type[12]; // 输入类型
 	{UNIT_M_S2,UNIT_TEMP,UNIT_M_S2,UNIT_M_S2,UNIT_M_S2,UNIT_M_S2,1,1,1,1,1,1},//uint8_t unit[12];  // 单位
-	{250,250,250,50,1000,1000,1000,1000,10000,10000,10000,10000},//uint32_t scale[12]; // 转换系数
+	{10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000,10000},//uint32_t scale[12]; // 转换系数
 	{0.0f,0.0f,0.0f,1250.f,1250.f,0,0,0,8192,8192,8192,8192},//uint32_t adjust[12]; // 修正系数
 //	{0,1,2,~0,~0,~0,~0,~0,3,4,5,6},//uint16_t interface_addr[12]; // modbus 地址 上传
 	{100,100,100,100,100,100},//	float alarmgate[12]; // float报警值
@@ -90,11 +90,11 @@ struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 	0x0100,                         //放大倍数
 	0x11,                      //  发射功率设置
 	0x01,                    //AD采样时间，跟工作周期一个道理
-	8192,                     //AD采样频率
+	51200,                     //AD采样频率
 	0x58B6A4C3,           //8点00分，aabb的格式，aa代表时间，bb代表分钟，秒默认为0
 	0,                //flash起始地址
-	PARAMETERMODE,
-	0x1F,     //选哪几个通道传输
+	WAVEMODE,
+	0xFF,     //选哪几个通道传输
 	1, //DHCP
 	"wifi-sensor",//"TP-LINK-SCZZB",//"yec-test",//"wifi-sensor",//"TP-LINK-sczzb2",//"hold-704",//"wifi-test1",//"yec-test",//"wifi-test",//"yec-test",//"zl_sensor",/////"yec-test",//"test3",//"qiangang2", //"qiangang1", //"qiangang1", /////
   "wifi-sensor",//"china-yec",//"",//"wifi-sensor",//"18051061462",//"wifi-test",//"zl_sensor",///"china-yec",//"",////"",//"zl_sensor",/"lft13852578307",//"",//"",//"123456789",//"china-yec.com",// //
@@ -106,14 +106,15 @@ struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 	1,
 	1,
 	1,
-	0x1f,
+	0xff,
 	1,
 	0,  //是否主动发送心跳包
 	0,
 	0,
+	{51200,51200,51200,51200,51200,51200,51200,51200,51200,51200,12800,12800},
 };
 
-
+struct PARAMETER Parameter;
 /*
 *********************************************************************************************************
 *	函 数 名: main
@@ -127,7 +128,14 @@ int main(void)
 {
 
 	bsp_Init();		/* 硬件初始化 */
+
 	bsp_InitExtSDRAM();
+	
+	bsp_InitAD7606();
+//	AD7606_EnterAutoMode(500);
+//	while(1)
+//	{
+//	}
 	/* initialize EasyLogger */
 	if (elog_init() == ELOG_NO_ERR)
 	{
@@ -148,12 +156,14 @@ int main(void)
 	}
 	
 	WRITE_ready = xSemaphoreCreateBinary();
+	AD7606_ready = xSemaphoreCreateBinary();
 	xSemaphoreGive(WRITE_ready);
 	
 	xTaskCreate( vTaskLED, "vTaskLED", 512, NULL, 3, &xHandleTaskLED );
 	xTaskCreate( vTaskLwip,"Lwip"     ,512, NULL, 2, &xHandleTaskLwip );
-	xTaskCreate( vTaskTlvloop,"TLV_LOOP"     ,512, NULL, 2, &xHandleTaskTlvloop );
-	xTaskCreate( vTaskTSendBuf,"Sendbuf"     ,512, NULL, 2, &xHandleTaskSendbuf );
+	xTaskCreate( vTaskTlvloop,"TLV_LOOP"     ,512, NULL, 4, &xHandleTaskTlvloop );
+	xTaskCreate( vTaskTSendBuf,"Sendbuf"     ,512, NULL, 5, &xHandleTaskSendbuf );
+	xTaskCreate( vTaskTDataProcess,"dataprocess"     ,512, NULL, 6, &xHandleDataProcess );
 	/* 启动调度，开始执行任务 */
 	vTaskStartScheduler();
 }
@@ -167,6 +177,11 @@ static void vTaskTSendBuf(void *pvParameters)
 	send_buffer_task();
 }
 
+extern void AD7606_TASK(void);
+static void vTaskTDataProcess(void *pvParameters)
+{
+	AD7606_TASK();
+}
 
 static void vTaskTlvloop(void *pvParameters)
 {

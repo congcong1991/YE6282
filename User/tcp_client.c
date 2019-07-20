@@ -174,6 +174,8 @@ void receive_server_data_task( void )
 	}
 }
 
+extern void AD7606_EnterAutoMode(uint32_t _ulFreq);
+
 uint8_t command_start()
 { 
 	//EnableIEPEPower();
@@ -184,27 +186,65 @@ uint8_t command_start()
 		CmdBuf[i]=RXDCmdBuf[i];
 	  CmdBufLength=CmdBufLength;
 	 }
-	 
+	 WriteDataToTXDBUF(CmdBuf,CmdBufLength);
+	 AD7606_StartRecord(config.ADfrequence);
 	 return 1;
 }
 
+uint8_t command_stop()
+{ 
+
+	 {
+		for(uint8_t i=0;i<CmdBufLength;i++)
+		CmdBuf[i]=RXDCmdBuf[i];
+	  CmdBufLength=CmdBufLength;
+	 }
+	 AD7606_StopRecord();
+	 return 1;
+}
+
+uint16_t command_id(void)
+{ 
+	
+	 {
+		CmdBuf[0]=0x7e;
+		CmdBuf[1]=0x02;
+		CmdBuf[2]=0x08;
+		CmdBuf[3]=0x00;
+		CmdBuf[11]=config.SNnumber;
+		CmdBuf[10]=config.SNnumber>>8;
+		CmdBuf[9]=config.SNnumber>>16;
+		CmdBuf[8]=config.SNnumber>>24;
+		CmdBuf[7]=config.SNnumber>>32;
+		CmdBuf[6]=config.SNnumber>>40;
+		CmdBuf[5]=config.SNnumber>>48;
+		CmdBuf[4]=config.SNnumber>>56;
+		CmdBuf[12]=0;
+		for(uint16_t i=1;i<12;i++)
+		CmdBuf[12]+=CmdBuf[i];
+		CmdBuf[13]=0x7e;
+	  CmdBufLength=14;
+    WriteDataToTXDBUF(CmdBuf,CmdBufLength);
+	 }
+	 return 1;
+}
 
 uint8_t AnalyCmd(uint16_t length)
 { 
 
 	switch( RXDCmdBuf[1] ){     //看命令行
-//		case COMMAND_ID:     //0x02
-//			   command_id();
-//			break;
+		case COMMAND_ID:     //0x02
+			   command_id();
+			break;
 //		case COMMAND_CHANNELKIND:     //0x03 通道类型设置
 //			   command_channelkind();
 //			break;
 //		case COMMAND_REPLYIP:     //0x03 通道类型设置
 //			   command_replyip();
 //			break;
-//		case COMMAND_STOP:
-//			   command_stop();
-//			break;
+		case COMMAND_STOP:
+			   command_stop();
+			break;
 //		case COMMAND_RECEIVE_BEACON:
 //				command_receive_beacon();
 //			break;

@@ -22,12 +22,12 @@ extern volatile uint16_t RxdBufTailIndex;
 extern uint8_t CmdBuf[TX_BUFFER_SIZE];
 extern uint16_t CmdBufLength;
 
-#define AD7606_ADCHS 4
-#define AD7606SAMPLEPOINTS 128
+#define AD7606_ADCHS 8
+#define AD7606SAMPLEPOINTS 200
 #define AD7606_SAMPLE_COUNT AD7606_ADCHS*2*AD7606SAMPLEPOINTS
 
-#define BOARDPOINTS SAMPLEPOINTS*Acceleration_ADCHS*sizeof(int16_t) //(4*ADCHS*SAMPLEPOINTS)
-#define PERIODBOARDPOINTS SAMPLEPOINTS*sizeof(int16_t) //(4*ADCHS*SAMPLEPOINTS)
+#define BOARDPOINTS AD7606SAMPLEPOINTS*sizeof(int16_t)*2 //(4*ADCHS*SAMPLEPOINTS)
+#define PERIODBOARDPOINTS AD7606SAMPLEPOINTS*sizeof(int16_t) //(4*ADCHS*SAMPLEPOINTS)
 #define ADC16_ByDMA_SAMPLE_COUNT (2*ADCHS*SAMPLEPOINTS) /* The ADC16 sample count. */
 
 
@@ -50,8 +50,11 @@ extern uint32_t NetReceiveBufTailIndex;
 
 
 extern int16_t emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
-extern uint16_t TXD_BUFFER_NET[5000][1000] __attribute__((at(0xC0200000))); //0xa0 0000
+extern uint8_t TXD_BUFFER_NET[5000][2000] __attribute__((at(0xC0200000))); //0xa0 0000
 
+extern uint8_t WriteDataToTXDBUF(uint8_t * source,uint32_t length);
+extern void AD7606_StartRecord(uint32_t _ulFreq);
+extern void AD7606_StopRecord(void);
 
 #define RxdBufLine  256
 #define EMUPONITS  16390*2  //最大取2S的数据
@@ -159,6 +162,7 @@ typedef struct  CONFIG				 // 配置信息
 	uint8_t Enable_active_beacon;
 	uint8_t Iap_flag;
 	uint32_t Iap_datalength;
+	uint32_t channel_freq[12];
 }CONFIG;
 
 extern  struct CONFIG  config;  //配置信息
@@ -191,6 +195,7 @@ typedef  struct PARAMETER				 // 所有参数
 	int32_t int_av[12];
 	int64_t s[12]; // 累积
 	int64_t as[12]; // 累积
+	uint32_t sparse_index[12];
 	float v[12];
 	float fv[12];
 	float vs[12];  //速度累加和，浮点型
@@ -274,6 +279,7 @@ typedef  struct PARAMETER				 // 所有参数
 	uint32_t IapDataLength;
 }PARAMETER;
 
+extern struct PARAMETER Parameter;
 typedef enum {PRE_TX=0,IN_TX=1,} TXcondition;
 //typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 //typedef enum {VLLS = 0, MANUALRESET = !DISABLE} WakeupSourec;

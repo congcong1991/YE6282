@@ -132,6 +132,7 @@
 .\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_timer.h
 .\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_led.h
 .\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_key.h
+.\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_cpu_rtc.h
 .\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_uart_fifo.h
 .\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_spi_ad7606.h
 .\objects\sys_arch.o: ..\..\User\bsp\inc\bsp_fmc_sdram.h

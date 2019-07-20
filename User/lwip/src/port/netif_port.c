@@ -188,10 +188,26 @@ void ETH_IRQHandler(void)
 static void low_level_init(struct netif *netif)
 {
   uint32_t idx, duplex, speed = 0;
+	uint32_t sn0;
   int32_t PHYLinkState;
   ETH_MACConfigTypeDef MACConf;
-  uint8_t macaddress[6]= {ETH_MAC_ADDR0, ETH_MAC_ADDR1, ETH_MAC_ADDR2, ETH_MAC_ADDR3, ETH_MAC_ADDR4, ETH_MAC_ADDR5};
-  
+	uint8_t macaddress[6];
+//  uint8_t macaddress[6]= {ETH_MAC_ADDR0, ETH_MAC_ADDR1, ETH_MAC_ADDR2, ETH_MAC_ADDR3, ETH_MAC_ADDR4, ETH_MAC_ADDR5};
+  sn0=*(uint32_t *)(0x1FF1E800);//获取STM32的唯一ID的前24位作为MAC地址后三字节
+	//默认远端IP为:192.168.1.115
+	/*
+	lwipx->remoteip[0]=192.;	
+	lwipx->remoteip[1]=168;
+	lwipx->remoteip[2]=2;
+	lwipx->remoteip[3]=7;
+	*/
+	//MAC地址设置(高三字节固定为:2.0.0,低三字节用STM32唯一ID)
+	macaddress[0]=2;//高三字节(IEEE称之为组织唯一ID,OUI)地址固定为:2.0.0
+	macaddress[1]=0;
+	macaddress[2]=0;
+	macaddress[3]=(sn0>>16)&0XFF;//低三字节用STM32的唯一ID
+	macaddress[4]=(sn0>>8)&0XFFF;;
+	macaddress[5]=sn0&0XFF; 
   EthHandle.Instance = ETH;  
   EthHandle.Init.MACAddr = macaddress;
   EthHandle.Init.MediaInterface = HAL_ETH_RMII_MODE;
@@ -206,13 +222,20 @@ static void low_level_init(struct netif *netif)
   netif->hwaddr_len = ETH_HWADDR_LEN;
   
   /* set MAC hardware address */
-  netif->hwaddr[0] =  ETH_MAC_ADDR0;
-  netif->hwaddr[1] =  ETH_MAC_ADDR1;
-  netif->hwaddr[2] =  ETH_MAC_ADDR2;
-  netif->hwaddr[3] =  ETH_MAC_ADDR3;
-  netif->hwaddr[4] =  ETH_MAC_ADDR4;
-  netif->hwaddr[5] =  ETH_MAC_ADDR5;
-  
+//  netif->hwaddr[0] =  ETH_MAC_ADDR0;
+//  netif->hwaddr[1] =  ETH_MAC_ADDR1;
+//  netif->hwaddr[2] =  ETH_MAC_ADDR2;
+//  netif->hwaddr[3] =  ETH_MAC_ADDR3;
+//  netif->hwaddr[4] =  ETH_MAC_ADDR4;
+//  netif->hwaddr[5] =  ETH_MAC_ADDR5;
+  netif->hwaddr[0] =  macaddress[0];
+  netif->hwaddr[1] =  macaddress[1];
+  netif->hwaddr[2] =  macaddress[2];
+  netif->hwaddr[3] =  macaddress[3];
+  netif->hwaddr[4] =  macaddress[4];
+  netif->hwaddr[5] =  macaddress[5];
+	
+	
   /* maximum transfer unit */
   netif->mtu = 1500;
   
