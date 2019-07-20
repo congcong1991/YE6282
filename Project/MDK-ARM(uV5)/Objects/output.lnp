@@ -2,6 +2,7 @@
 ".\objects\main.o"
 ".\objects\tcp_client.o"
 ".\objects\date_process_task.o"
+".\objects\emu_data_task.o"
 ".\objects\send_buffer_task.o"
 ".\objects\bsp.o"
 ".\objects\bsp_led.o"

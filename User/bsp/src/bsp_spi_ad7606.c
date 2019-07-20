@@ -637,8 +637,8 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 		short aa_0_1 = ((aa_0<<8) | aa_1);
 		y = aa_0_1;
 		
-		Ad7606_Data[AD7606DataCounter++]=ttttttt*0.1;
-//		Ad7606_Data[AD7606DataCounter++]=y;
+//		Ad7606_Data[AD7606DataCounter++]=ttttttt*0.1;
+		Ad7606_Data[AD7606DataCounter++]=y;
 	}
 	ttttttt++;
 	if(ttttttt>=51200)
@@ -651,13 +651,13 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 	if(AD7606DataCounter==(AD7606SAMPLEPOINTS*AD7606_ADCHS))
 	{
 		CurrentAD7606DataCounter=0;
-		bsp_LedToggle(2);		
+//		bsp_LedToggle(2);		
 //		memset(&Ad7606_Data[AD7606SAMPLEPOINTS*AD7606_ADCHS],0,AD7606SAMPLEPOINTS*AD7606_ADCHS);
 		xSemaphoreGiveFromISR( AD7606_ready, &xHigherPriorityTaskWoken );  
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 	}else if(AD7606DataCounter>(AD7606SAMPLEPOINTS*AD7606_ADCHS*2-AD7606_ADCHS))
 	{
-		bsp_LedToggle(2);	
+//		bsp_LedToggle(2);	
 		CurrentAD7606DataCounter=AD7606SAMPLEPOINTS*AD7606_ADCHS;
 		AD7606DataCounter=0;
 		xSemaphoreGiveFromISR(AD7606_ready,&xHigherPriorityTaskWoken );  

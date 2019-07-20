@@ -52,13 +52,19 @@ static void vTaskLwip(void *pvParameters);
 static void vTaskTlvloop(void *pvParameters);
 static void vTaskTSendBuf(void *pvParameters);
 static void vTaskTDataProcess(void *pvParameters);
- TaskHandle_t xHandleTaskLED  = NULL;
- TaskHandle_t xHandleTaskLwip = NULL;
- TaskHandle_t xHandleTaskTlvloop = NULL;
- TaskHandle_t xHandleTaskSendbuf = NULL;
-	TaskHandle_t xHandleDataProcess = NULL;
- SemaphoreHandle_t WRITE_ready;
- SemaphoreHandle_t AD7606_ready;
+static void vTaskDataEmu(void *pvParameters);
+
+TaskHandle_t xHandleTaskLED  = NULL;
+TaskHandle_t xHandleTaskLwip = NULL;
+TaskHandle_t xHandleTaskTlvloop = NULL;
+TaskHandle_t xHandleTaskSendbuf = NULL;
+TaskHandle_t xHandleDataProcess = NULL;
+TaskHandle_t xHandleDataEmu = NULL;
+
+SemaphoreHandle_t WRITE_ready;
+SemaphoreHandle_t AD7606_ready;
+SemaphoreHandle_t SAMPLEDATA_ready;
+
 struct  CONFIG  config={0xAA55, //	uint16_t vaildsign;
 	1,//uint8_t baundrate;    
 	1,//uint8_t addr; 
@@ -157,6 +163,7 @@ int main(void)
 	
 	WRITE_ready = xSemaphoreCreateBinary();
 	AD7606_ready = xSemaphoreCreateBinary();
+	SAMPLEDATA_ready= xSemaphoreCreateBinary();
 	xSemaphoreGive(WRITE_ready);
 	
 	xTaskCreate( vTaskLED, "vTaskLED", 512, NULL, 3, &xHandleTaskLED );
@@ -164,6 +171,7 @@ int main(void)
 	xTaskCreate( vTaskTlvloop,"TLV_LOOP"     ,512, NULL, 4, &xHandleTaskTlvloop );
 	xTaskCreate( vTaskTSendBuf,"Sendbuf"     ,512, NULL, 5, &xHandleTaskSendbuf );
 	xTaskCreate( vTaskTDataProcess,"dataprocess"     ,512, NULL, 6, &xHandleDataProcess );
+	xTaskCreate( vTaskDataEmu,"dataEMU"     ,1024, NULL, 7, &xHandleDataEmu );
 	/* 启动调度，开始执行任务 */
 	vTaskStartScheduler();
 }
@@ -188,6 +196,12 @@ static void vTaskTlvloop(void *pvParameters)
 	receive_server_data_task();
 }
 
+extern void DATA_EMU_TASK ( void );
+static void vTaskDataEmu(void *pvParameters)
+{
+	DATA_EMU_TASK();
+}
+	
 static void netif_config(void)
 {
   ip_addr_t ipaddr;

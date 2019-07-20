@@ -1,4 +1,4 @@
-.\objects\send_buffer_task.o: D:\YE6283\stm32h7_freertos-master\User\send_buffer_task.c
+.\objects\send_buffer_task.o: ..\..\User\send_buffer_task.c
 .\objects\send_buffer_task.o: ..\..\User\bsp\bsp.h
 .\objects\send_buffer_task.o: ..\..\Libraries\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h
 .\objects\send_buffer_task.o: ..\..\User\bsp\stm32h7xx_hal_conf.h
@@ -105,7 +105,7 @@
 .\objects\send_buffer_task.o: ..\..\User\bsp\inc\bsp_fmc_io.h
 .\objects\send_buffer_task.o: ..\..\User\bsp\inc\bsp_tim_pwm.h
 .\objects\send_buffer_task.o: ..\..\User\bsp\inc\bsp_beep.h
-.\objects\send_buffer_task.o: D:\YE6283\stm32h7_freertos-master\User\app.h
+.\objects\send_buffer_task.o: ..\..\User\app.h
 .\objects\send_buffer_task.o: ..\..\User\FreeRTOS\include\FreeRTOS.h
 .\objects\send_buffer_task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\send_buffer_task.o: ..\..\User\FreeRTOS\include\FreeRTOSConfig.h

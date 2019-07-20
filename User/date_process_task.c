@@ -51,13 +51,13 @@ void UpdateWave(float yy,uint8_t i) //????,??yy??????i???
 			WaveToSend[i][1]=0x40;//TELid>>8;	
 			WaveToSend[i][2]=(uint8_t)buflength;//TELid>>16;
 			WaveToSend[i][3]=buflength>>8;// TELid>>24; //2,3????????482??
-		  WaveToSend[i][4]=0;//g_tRTC.Year;
-		  WaveToSend[i][5]=0;//g_tRTC.Year>>8;
-		  WaveToSend[i][6]=0;//g_tRTC.Mon;
-		  WaveToSend[i][7]=0;//g_tRTC.Day; //时间用32位表示
-		  WaveToSend[i][8]=0;//g_tRTC.Hour;
-		  WaveToSend[i][9]=0;//g_tRTC.Min;
-		  WaveToSend[i][10]=0;//g_tRTC.Sec; //时间用32位表示
+		  WaveToSend[i][4]=g_tRTC.Year;
+		  WaveToSend[i][5]=g_tRTC.Year>>8;
+		  WaveToSend[i][6]=g_tRTC.Mon;
+		  WaveToSend[i][7]=g_tRTC.Day; //时间用32位表示
+		  WaveToSend[i][8]=g_tRTC.Hour;
+		  WaveToSend[i][9]=g_tRTC.Min;
+		  WaveToSend[i][10]=g_tRTC.Sec; //时间用32位表示
 		  WaveToSend[i][11]=(uint8_t)wave_packege_flag; //时间用32位表示
 		  WaveToSend[i][12]=wave_packege_flag>>8; //时间用32位表示
 			WaveToSend[i][13]=i;
@@ -83,6 +83,7 @@ void UpdateAccelerationData(float yyy,uint8_t i,uint32_t DataIndex)
 		 emu_data[currentSAMPLEblock][i][DataIndex]=yyy;//yyy;
 		}else if(config.DataToBoardMode==WAVEMODE)
 		{  
+		emu_data[currentSAMPLEblock][i][DataIndex]=yyy;
 		 UpdateWave(yyy,i); 
 		}	
 	
@@ -91,10 +92,10 @@ void UpdateAccelerationData(float yyy,uint8_t i,uint32_t DataIndex)
 int32_t halfref=0;
 uint32_t ActualIndex=0;
 int32_t AD_ZERO[AD7606_ADCHS],AD_ZEROlowpass[AD7606_ADCHS],AD_INTER[AD7606_ADCHS],lastdata[AD7606_ADCHS],filtercounter[AD7606_ADCHS];
-extern  SemaphoreHandle_t AD7606_ready;
+extern  SemaphoreHandle_t SAMPLEDATA_ready;
 extern __attribute__((section (".RAM_D1"))) int16_t Ad7606_Data[AD7606SAMPLEPOINTS*AD7606_ADCHS*2];
 extern volatile uint32_t CurrentAD7606DataCounter;
-
+extern  SemaphoreHandle_t AD7606_ready;
 uint32_t sprase_counter[12],StoreDateIndex[12];
 void emu_sprase_index()
 {
@@ -192,14 +193,15 @@ void AD7606_TASK(void)
 						sprase_counter[i]++;
 						if(sprase_counter[i]>=Parameter.sparse_index[i]) 
 						{
-//						bsp_LedToggle(2);
+						bsp_LedToggle(2);
 						sprase_counter[i]=0;
-						StoreDateIndex[i]++;	//用来记录储存数据的下标
+							//用来记录储存数据的下标
 //						if(StoreDateIndex[i]>=config.channel_freq[i])
 //							StoreDateIndex[i]=0;
 //						y=y*0.30517578f;
 					
 						UpdateAccelerationData(y,i,StoreDateIndex[i]);
+						StoreDateIndex[i]++;
 						}
 					}else if(config.interface_type[i]==TYPE_NONE)
 					{
@@ -223,7 +225,7 @@ void AD7606_TASK(void)
 				}
 				 ActualIndex=0;
          currentSAMPLEblock=(currentSAMPLEblock+1)%2;
-//				 xSemaphoreGive(SAMPLEDATA_ready);
+				 xSemaphoreGive(SAMPLEDATA_ready);
 				}
 				}
 

@@ -49,8 +49,8 @@ extern uint32_t NetReceiveBufTailIndex;
 
 
 
-extern int16_t emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
-extern uint8_t TXD_BUFFER_NET[5000][2000] __attribute__((at(0xC0200000))); //0xa0 0000
+extern float emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
+extern uint8_t TXD_BUFFER_NET[5000][2000] __attribute__((at(0xC0400000))); //0xa0 0000
 
 extern uint8_t WriteDataToTXDBUF(uint8_t * source,uint32_t length);
 extern void AD7606_StartRecord(uint32_t _ulFreq);

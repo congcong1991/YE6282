@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>燩tw丞O(燩tw丞O(</Name>
+          <Name>燩tw锈?燩tw锈?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -239,6 +239,16 @@
           <count>15</count>
           <WinNumber>1</WinNumber>
           <ItemText>g_tRTC</ItemText>
+        </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>emu_data</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>testOutput</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
@@ -534,7 +544,7 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>18</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\User\bsp\src\bsp_fmc_sdram.c</PathWithFileName>
@@ -602,7 +612,7 @@
 
   <Group>
     <GroupName>HAL_Driver</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1110,7 +1120,7 @@
 
   <Group>
     <GroupName>lwip/api</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1226,7 +1236,7 @@
 
   <Group>
     <GroupName>lwip/core</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

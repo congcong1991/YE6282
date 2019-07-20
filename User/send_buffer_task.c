@@ -26,8 +26,8 @@
 
 MDMA_HandleTypeDef MDMA_Handle;
 
-int16_t emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
-uint8_t TXD_BUFFER_NET[5000][2000] __attribute__((at(0xC0200000))); //0xa0 0000
+float emu_data[2][8][51200] __attribute__((at(0xC0000000)));  //双缓存，8通道51200个数据 0x19 0000
+uint8_t TXD_BUFFER_NET[5000][2000] __attribute__((at(0xC0400000))); //0xa0 0000
 uint32_t TXD_BUFFER_NET_Length[5000];
 uint16_t volatile TransferCompleteDetected=0;
 uint16_t testtt[1024]={0x1111,0x2222,0x3333,0x5445,0x6666,0x1111};

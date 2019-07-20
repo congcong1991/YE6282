@@ -98,6 +98,7 @@
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_timer.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_led.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_key.h
+.\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_cpu_rtc.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_uart_fifo.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_spi_ad7606.h
 .\objects\emu_data_task.o: ..\..\User\bsp\inc\bsp_fmc_sdram.h

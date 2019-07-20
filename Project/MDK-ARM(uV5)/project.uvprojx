@@ -335,7 +335,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER, STM32H743xx,ARM_MATH_CM7</Define>
+              <Define>USE_HAL_DRIVER, STM32H743xx ,ARM_MATH_CM7</Define>
               <Undefine></Undefine>
               <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32H7xx\Include;..\..\Libraries\STM32H7xx_HAL_Driver\Inc;..\..\User\bsp\inc;..\..\User;..\..\User\bsp;..\..\User\FreeRTOS\include;..\..\User\FreeRTOS\portable\RVDS\ARM_CM7\r0p1;..\..\User\lwip\src\include;..\..\User\lwip\src\port;..\..\User\segger_rtt;..\..\User\easylogger\inc;..\..\User</IncludePath>
             </VariousControls>
@@ -509,7 +509,7 @@
                   <RVCTZI>0</RVCTZI>
                   <RVCTOtherData>0</RVCTOtherData>
                   <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
+                  <IncludeInBuild>1</IncludeInBuild>
                   <AlwaysBuild>2</AlwaysBuild>
                   <GenerateAssemblyFile>2</GenerateAssemblyFile>
                   <AssembleAssemblyFile>2</AssembleAssemblyFile>

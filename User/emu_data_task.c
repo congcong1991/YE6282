@@ -31,7 +31,7 @@
 extern volatile uint8_t currentblock ;
 
 
-
+extern  SemaphoreHandle_t SAMPLEDATA_ready;
 
 
 
@@ -105,8 +105,26 @@ void updateParameter(uint8_t i)
 
 
 
-extern void InitIntermediateVariable(uint8_t i) ;
-
+void InitIntermediateVariable(uint8_t i) // ???????,??????? ???????
+{ 
+	Parameter.S_average[i]=0;
+	Parameter.alarm[i]=0;
+	Parameter.backlash[i]=0;
+	Parameter.gate[i]=0;
+	Parameter.s[i]=0;
+	Parameter.as[i]=0;
+	Parameter.InterMAX[i]=0;
+//	Parameter.MaxValue[i]=0;
+	Parameter.InterMIN[i]=0;
+	Parameter.Inter_MarginIndex[i]=0;
+	Parameter.Abs_S_average[i]=0;
+	//Parameter.Abs_average[i]=0;
+	Parameter.S_sum[i]=0;
+	Parameter.SS_sum[i]=0;
+	Parameter.SSS_sum[i]=0;
+	Parameter.SSSS_sum[i]=0;
+	
+}
 float (*p)(double,uint32_t);
 
 double (*p_highpass)(double,uint32_t);
@@ -139,25 +157,23 @@ const float sacle12800_10HP=0.99811902410734921f*0.99547941240391791f;
 arm_biquad_casd_df1_inst_f32 S_test;
 
 volatile float hp_yy[6],SpeedInter[6];
+extern volatile uint32_t currentSAMPLEblock;
 void EmuData(void)
 { 
 	float absyy=0;
   float INTERsqrt=0;
 	float yy,vy;
-	uint32_t SAMPLEblock;
-	if(currentSAMPLEblock==1)SAMPLEblock=0;
-	else SAMPLEblock=1;
+	uint32_t SAMPLEblock=(currentSAMPLEblock+1)%2;;
+	
 	float ScaleValue=1;
 
-	
-	
-	SAMPLEblock=0;
 	{
 		
 		
 		
-		for(uint32_t j=0;j<Acceleration_ADCHS;j++)
+		for(uint32_t j=0;j<AD7606_ADCHS;j++)
 		{  
+			Parameter.ReciprocalofEMUnumber=1.0f/config.channel_freq[j];
 			if(((config.DataToSendChannel>>j)&0x01)==0)  //?????????
 			{
 				continue;
@@ -171,45 +187,47 @@ void EmuData(void)
 				arm_biquad_cascade_df1_init_f32(&S_test, numStages, (float32_t *)&IIRCoeffs51200_10HP[0], (float32_t
 			*)&IIRStateF32[0]);
 			/* IIR滤波 */
-			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&ReceiveSamplesPeriod[SAMPLEblock][j][0], testOutput, config.ADfrequence*2);
+			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&emu_data[SAMPLEblock][j][0], testOutput, config.ADfrequence);
 //			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)testOutput1, testOutput, config.ADfrequence*2);
 			
 			/*放缩系数 */
-			ScaleValue = sacle16384_10HP;
+			ScaleValue = sacle25600_10HP;
 				break;
 			case 25600:
 				arm_biquad_cascade_df1_init_f32(&S_test, numStages, (float32_t *)&IIRCoeffs25600_10HP[0], (float32_t
 			*)&IIRStateF32[0]);
 			/* IIR滤波 */
-			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&ReceiveSamplesPeriod[SAMPLEblock][j][0], testOutput, config.ADfrequence*2);
+			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&emu_data[SAMPLEblock][j][0], testOutput, config.ADfrequence);
 			/*放缩系数 */
-			 ScaleValue = sacle8192_10HP;
+			 ScaleValue = sacle25600_10HP;
 				break;
 			case 12800:
 				arm_biquad_cascade_df1_init_f32(&S_test, numStages, (float32_t *)&IIRCoeffs12800_10HP[0], (float32_t
 			*)&IIRStateF32[0]);
 			/* IIR滤波 */
-			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&ReceiveSamplesPeriod[SAMPLEblock][j][0], testOutput, config.ADfrequence*2);
+			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&emu_data[SAMPLEblock][j][0], testOutput, config.ADfrequence);
 //			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)testOutput1, testOutput, config.ADfrequence*2);
 			
 			/*放缩系数 */
-			ScaleValue = sacle16384_10HP;
+			ScaleValue = sacle25600_10HP;
 				break;
 			default:
-			arm_biquad_cascade_df1_init_f32(&S_test, numStages, (float32_t *)&IIRCoeffs16384_10HP[0], (float32_t
+			arm_biquad_cascade_df1_init_f32(&S_test, numStages, (float32_t *)&IIRCoeffs12800_10HP[0], (float32_t
 			*)&IIRStateF32[0]);
 			/* IIR滤波 */
-			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&ReceiveSamplesPeriod[SAMPLEblock][j][0], testOutput, config.ADfrequence*2);
+			arm_biquad_cascade_df1_f32(&S_test,(float32_t *)&emu_data[SAMPLEblock][j][0], testOutput, config.ADfrequence);
 			/*放缩系数 */
-			 ScaleValue =sacle16384_10HP;
+			 ScaleValue =sacle25600_10HP;
 			break;
 			}
 			
-			for(uint32_t i=0;i<2*config.ADfrequence;i++)	 
+			for(uint32_t i=0;i<config.ADfrequence;i++)	 
 			{
-				hp_yy[j]+=testOutput[i]*ScaleValue*1000*Parameter.ReciprocalofADfrequence;
-				hp_yy[j]=hp_yy[j]*0.999f;//泄放直流分量
-				if(i>=config.ADfrequence){	
+//				hp_yy[j]+=testOutput[i]*ScaleValue*1000*Parameter.ReciprocalofADfrequence;
+				hp_yy[j]=testOutput[i];
+//				hp_yy[j]=hp_yy[j]*0.999f;//泄放直流分量
+//				if(i>=0.3f*config.ADfrequence)
+					{	
 //				ReceiveSamplesPeriod[SAMPLEblock][j][i]=testOutput[i];					
 //				hp_yy[j]=testOutput[i]*ScaleValue;//1000*Parameter.ReciprocalofADfrequence;
 //				ReceiveSamplesPeriod[SAMPLEblock][j][i]=hp_yy[j];
@@ -220,19 +238,19 @@ void EmuData(void)
 		arm_sqrt_f32(tt,(float32_t *)Parameter.fv+j);
 		Parameter.vs[j]=0; //?????0		
 		}
-		for(uint32_t j=0;j<Acceleration_ADCHS;j++)
+		for(uint32_t j=0;j<AD7606_ADCHS;j++)
 		{  
 				if(((config.DataToSendChannel>>j)&0x01)==0)  //?????????
 				{
 					continue;
 				}
 				 InitIntermediateVariable(j); //???????
-				 for(uint32_t i=config.ADfrequence;i<config.ADfrequence*(config.ADtime+1);i++)	 {
-				 yy=ReceiveSamplesPeriod[SAMPLEblock][j][i];
+				 for(uint32_t i=0;i<config.ADfrequence;i++)	 {
+				 yy=emu_data[SAMPLEblock][j][i];
 				 Parameter.S_average[j]+=yy;
 			 }
 		}
-		for(uint32_t j=0;j<Acceleration_ADCHS;j++)
+		for(uint32_t j=0;j<AD7606_ADCHS;j++)
 		{
 			Parameter.average[j]=Parameter.S_average[j]*Parameter.ReciprocalofEMUnumber;//?????
 			if(0)
@@ -240,14 +258,14 @@ void EmuData(void)
 				NeedRestartCollect();
 			}
 		}
-		for(uint32_t j=0;j<Acceleration_ADCHS;j++)	 {
+		for(uint32_t j=0;j<AD7606_ADCHS;j++)	 {
 		 	if(((config.DataToSendChannel>>j)&0x01)==0)  //?????????
 			{
 				continue;
 			}
-      for(uint32_t i=config.ADfrequence;i<config.ADfrequence*(config.ADtime+1);i++)
+      for(uint32_t i=0;i<config.ADfrequence;i++)
 	   {
-      yy=ReceiveSamplesPeriod[SAMPLEblock][j][i]-Parameter.average[j];
+      yy=emu_data[SAMPLEblock][j][i]-Parameter.average[j];
 			
 			if(Parameter.InterMAX[j]<yy) Parameter.InterMAX[j]=yy;
 			if(Parameter.InterMIN[j]>yy) Parameter.InterMIN[j]=yy;
@@ -263,7 +281,7 @@ void EmuData(void)
 	   }
 			
 		}
-		for(uint32_t j=0;j<Acceleration_ADCHS;j++)
+		for(uint32_t j=0;j<AD7606_ADCHS;j++)
 		{
 			updateParameter(j);
 //			if(Parameter.EffectiveValue[j]>25)
@@ -283,18 +301,16 @@ uint8_t BoardParameter_withtime(void)  //发送特征值
 	sendbuf[0]=0x7e;
 	sendbuf[1]=0x42;
 	uint32_t iii=0;
-	rtc_datetime_t currentime;
-	RTC_GetDatetime(RTC,&currentime);
-//	sendbuf[2]=0x32;
-//	sendbuf[3]=0x00;
-	sendbuf[4]=Sample_Time.year;
-	sendbuf[5]=Sample_Time.year>>8;
-	sendbuf[6]=Sample_Time.month;
-	sendbuf[7]=Sample_Time.day; //时间用32位表示
-	sendbuf[8]=Sample_Time.hour;
-	sendbuf[9]=Sample_Time.minute;
-	sendbuf[10]=Sample_Time.second; //时间用32位表示		
-	for(uint32_t ii=0;ii<Acceleration_ADCHS;ii++)
+	
+	sendbuf[4]=g_tRTC.Year;
+	sendbuf[5]=g_tRTC.Year>>8;
+	sendbuf[6]=g_tRTC.Mon;
+	sendbuf[7]=g_tRTC.Day; //时间用32位表示
+	sendbuf[8]=g_tRTC.Hour;
+	sendbuf[9]=g_tRTC.Min;
+	sendbuf[10]=g_tRTC.Sec; //时间用32位表示
+		
+	for(uint32_t ii=0;ii<AD7606_ADCHS;ii++)
 	{
 	if(((config.DataToSendChannel>>ii)&0x01)==0)  //未使能的通道不发送
 	{
@@ -369,7 +385,7 @@ uint8_t BoardParameter_withtime(void)  //发送特征值
 	iii++;
 } 
 	iii--;
-  uint32_t length=50*(Acceleration_ADCHS-empty_Acceleration_ADCHS)+7;
+  uint32_t length=50*(AD7606_ADCHS-empty_Acceleration_ADCHS)+7;
   sendbuf[2]=(uint8_t)length;
 	sendbuf[3]=(uint8_t)(length>>8);
 	sendbuf[61+50*iii]=0;
@@ -384,7 +400,7 @@ uint8_t BoardParameter_withtime(void)  //发送特征值
 }
 
 
-void FFTDATA_PROCESS_TASK ( void *pvParameters )
+void DATA_EMU_TASK ( void )
 { 
   volatile uint8_t firsttime=0;
 
@@ -392,13 +408,14 @@ void FFTDATA_PROCESS_TASK ( void *pvParameters )
  {
   while(!(xSemaphoreTake(SAMPLEDATA_ready, portMAX_DELAY) == pdTRUE))
 			{};                // 		 
-		if((config.DataToBoardMode==PARAMETERMODE)&&(config.ParameterTransimissonStatus==true))
+//		if(config.DataToBoardMode==PARAMETERMODE)
 			{
-				NotNeedRestartCollect();
+//				NotNeedRestartCollect();
 				EmuData();				
-				BoardParameter_withtime();
+//				BoardParameter_withtime();
 			 
    	
   }
  }
+}
 /***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/
